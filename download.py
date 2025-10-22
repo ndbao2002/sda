@@ -18,6 +18,8 @@ calendar_link = [
     "https://data.insideairbnb.com/italy/veneto/venice/2024-12-07/data/calendar.csv.gz",
 ]
 
+geo_link = "https://data.insideairbnb.com/italy/veneto/venice/2025-09-11/visualisations/neighbourhoods.geojson"
+
 def download_and_extract(url, output_dir):
     local_filename = url.split('/')[-1]
     local_filepath = os.path.join(output_dir, local_filename)
@@ -64,3 +66,11 @@ os.makedirs(calendar_directory, exist_ok=True)
 for link in calendar_link:
     extracted_file = download_and_extract(link, calendar_directory)
     print(f"Extracted calendar file: {extracted_file}")
+
+# Download geojson file to output directory
+# I haven't try this yet, but it should work
+geo_response = requests.get(geo_link)
+geo_filepath = os.path.join(output_directory, "neighbourhoods.geojson")
+with open(geo_filepath, 'wb') as f:
+    f.write(geo_response.content)
+print(f"Downloaded geojson file: {geo_filepath}")

@@ -4,14 +4,23 @@ import glob
 
 # Paths
 INPUT_DIR = "airbnb_data/calendar_truncated"
+INPUT_LISTINGS_DIR = "airbnb_data/listings"
 
 # Collect all CSVs
 calendar_files = sorted(glob.glob(os.path.join(INPUT_DIR, "*.csv")))
+
+# Take corresponding listing files
+listing_files = []
+for calendar_file in calendar_files:
+    period_name = os.path.basename(calendar_file).replace("_calendar.csv", "")
+    listing_file = os.path.join(INPUT_LISTINGS_DIR, f"{period_name}_listings.csv")
+    listing_files.append(listing_file)
 all_summaries = []
 
-for file_path in calendar_files:
-    print(f"Processing {os.path.basename(file_path)}...")
-    df = pd.read_csv(file_path, usecols=['listing_id', 'date', 'available', 'price'], low_memory=False)
+for (calendar_file, listing_file) in zip(calendar_files, listing_files):
+    print(f"Processing {os.path.basename(calendar_file)} and {os.path.basename(listing_file)}...")
+    df = pd.read_csv(calendar_file, usecols=['listing_id', 'date', 'available', 'price'], low_memory=False)
+    listings_df = pd.read_csv(listing_file, usecols=['id', 'neighbourhood_cleansed'], low_memory=False)
     
     # Drop null rows safely (retain rows with valid data)
     df = df.dropna(subset=['available', 'price'])
@@ -26,15 +35,19 @@ for file_path in calendar_files:
     
     # Convert available to boolean
     df['available'] = df['available'].map({'t': True, 'f': False})
-    
-    # Aggregate per listing_id
-    summary = df.groupby('listing_id').agg(
+
+    # Merge with listings to get neighbourhood info
+    df = df.merge(listings_df, left_on='listing_id', right_on='id', how='left')
+    df.drop(columns=['id'], inplace=True)
+
+    # Aggregate per neighborhood -> per date
+    summary = df.groupby(['neighbourhood_cleansed', 'date']).agg(
         avg_price_calendar=('price', 'mean'),
         occupancy_rate=('available', lambda x: 1 - x.mean())  # unavailable fraction
     ).reset_index()
     
     # Save per-file summary
-    period_name = os.path.basename(file_path).replace("_calendar.csv", "")
+    period_name = os.path.basename(calendar_file).replace("_calendar.csv", "")
     
     summary['snapshot_date'] = period_name
     all_summaries.append(summary)
