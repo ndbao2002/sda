@@ -14,6 +14,7 @@ OUTLIER_DIR.mkdir(parents=True, exist_ok=True)
 files = [
     "2024-12-07_listings.csv",
     "2025-03-02_listings.csv",
+    "2025-06-09_listings.csv",
     "2025-09-11_listings.csv"
 ]
 
@@ -25,7 +26,7 @@ cols = [
     'last_review', 'reviews_per_month', 'calculated_host_listings_count',
     'calculated_host_listings_count_entire_homes', 'calculated_host_listings_count_private_rooms',
     'calculated_host_listings_count_shared_rooms', 'host_listings_count', 'host_is_superhost',
-    'amenities', 'last_scraped', 'license', 'availability_365'
+    'amenities', 'last_scraped', 'license', 'availability_90'
 ]
 
 # ======== FUNCTIONS ========
@@ -70,7 +71,7 @@ def clean_and_aggregate(file_path):
         avg_price_per_person=('price_per_accommodate', 'mean'),
         pct_entire_home=('room_type', lambda x: (x=='Entire home/apt').mean()*100),
         pct_superhost=('host_is_superhost', lambda x: (x=='t').mean()*100),
-        avg_availability=('availability_365', 'mean'),
+        avg_availability=('availability_90', 'mean'),
         avg_rating=('review_scores_rating', 'mean'),
         avg_reviews=('number_of_reviews', 'mean'),
         avg_min_nights=('minimum_nights', 'mean'),
