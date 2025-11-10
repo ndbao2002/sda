@@ -42,9 +42,9 @@ def clean_and_aggregate(file_path):
     # --- Clean columns ---
     df['price'] = df['price'].replace('[\$,]', '', regex=True).astype(float)
     df['host_is_superhost'] = df['host_is_superhost'].fillna('f')
-    df['reviews_per_month'] = df['reviews_per_month'].fillna(0)
-    df['number_of_reviews'] = df['number_of_reviews'].fillna(0)
-    df['review_scores_rating'] = df['review_scores_rating'].fillna(df['review_scores_rating'].median())
+    df['reviews_per_month'] = df['reviews_per_month'].fillna(0) # No use
+    df['number_of_reviews'] = df['number_of_reviews'].fillna(0) # No use
+    df['review_scores_rating'] = df['review_scores_rating'].fillna(df['review_scores_rating'].median()) # No use
 
     # --- Outlier thresholds ---
     min_nights_threshold = 30

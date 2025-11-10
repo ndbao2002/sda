@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 import time
 
-url = "https://www.immobiliare.it/api-next/city-guide/price-chart/1/"
+url = "https://www.immobiliare.it/api-next/city-guide/price-chart/2/"
 
 paths = [
     "/mercato-immobiliare/veneto/venezia/san-marco-rialto/",
@@ -40,4 +40,4 @@ for path in paths:
     time.sleep(2)
 
 df_all = pd.concat(records)
-df_all.to_csv("./airbnb_data/immobiliare_venice_price_trends.csv", index=False)
+df_all.to_csv("./airbnb_data/immobiliare_venice_price_rent_trends.csv", index=False)
